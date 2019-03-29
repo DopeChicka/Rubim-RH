@@ -37,6 +37,7 @@ RubimRH.Spell[103] = {
     Shadowmeld = Spell(58984),
     Rake = Spell(1822),
     RakeDebuff = Spell(155722),
+    SkullBash = Spell(106839),
     ShadowmeldBuff = Spell(58984),
     FerociousBite = Spell(22568),
     PredatorySwiftnessBuff = Spell(69369),
@@ -333,7 +334,7 @@ local function APL()
         return 0, 135328
     end
     StGenerators = function()
-        -- regrowth,if=talent.bloodtalons.enabled&buff.predatory_swiftness.up&buff.bloodtalons.down&combo_points=4&dot.rake.remains<4
+        -- regrowth,if=talent.bloodtalons.enabled&buff.datory_swiftness.up&buff.bloodtalons.down&combo_points=4&dot.rake.remains<4
         if S.Regrowth:IsReady() and (S.Bloodtalons:IsAvailable() and Player:BuffP(S.PredatorySwiftnessBuff) and Player:BuffDownP(S.BloodtalonsBuff) and Player:ComboPoints() == 4 and Target:DebuffRemainsP(S.RakeDebuff) < 4) then
             return S.Regrowth:Cast()
         end
@@ -444,10 +445,9 @@ local function APL()
         return QueueSkill()
     end
 
-    -- run_action_list,name=opener,if=variable.opener_done=0
-    --if (VarOpenerDone == 0) then
-        --return Opener();
-    --end
+    if S.SkullBash:IsReady() and RubimRH.InterruptsON() and Target:IsInterruptible() then
+        return S.SkullBash:Cast()
+    end
 
     -- run_action_list,name=single_target
     if (true) then
