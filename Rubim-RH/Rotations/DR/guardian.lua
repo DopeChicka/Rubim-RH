@@ -32,6 +32,11 @@ local IsTanking = false
 
 local function Bear()
 	--- Defensives / Healing
+	if S.SkullBash:IsReady() and RubimRH.InterruptsON() 
+		        and Target:IsInterruptible() then
+                return S.SkullBash:Cast()
+		
+        end
 
 	-- Bristling Fur
 	if S.BristlingFur:IsReady()
