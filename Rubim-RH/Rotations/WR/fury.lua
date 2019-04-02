@@ -88,7 +88,7 @@ Item.Warrior.Fury = {
 
 local I = Item.Warrior.Fury;
 
-local EnemyRanges = { 5, 8 }
+local EnemyRanges = { 5, 8, 'Melee' }
 local function UpdateRanges()
     for _, i in ipairs(EnemyRanges) do
         HL.GetEnemies(i);
@@ -114,9 +114,9 @@ local function UpdateExecuteID()
 end
 
 local OffensiveCDs = {
-    S.Avatar,
     S.Bladestorm,
     S.Recklessness,
+    S.Siegebreaker,
 }
 
 local function UpdateCDs()
@@ -154,8 +154,8 @@ local function APL()
     end
 
     SingleTarget = function()
-        -- siegebreaker,if=buff.recklessness.up|cooldown.recklessness.remains>20
-        if S.Siegebreaker:IsReady() and (Player:BuffP(S.Recklessness) or S.Recklessness:CooldownRemainsP() > 20) then
+        -- siegebreaker
+        if S.Siegebreaker:IsReady()  then
             return S.Siegebreaker:Cast()
         end
         -- rampage,if=buff.recklessness.up|(talent.frothing_berserker.enabled|talent.carnage.enabled&(buff.enrage.remains<gcd|rage>90)|talent.massacre.enabled&(buff.enrage.remains<gcd|rage>90))
@@ -183,7 +183,7 @@ local function APL()
             return S.Bladestorm:Cast()
         end
         -- dragon_roar,if=buff.enrage.up&(debuff.siegebreaker.up|!talent.siegebreaker.enabled)
-        if S.DragonRoar:IsReady() and Cache.EnemiesCount[5] >= 1  and (Player:BuffP(S.Enrage) and (Target:DebuffP(S.SiegebreakerDebuff) or not S.Siegebreaker:IsAvailable())) then
+        if S.DragonRoar:IsReady() and Cache.EnemiesCount[5] >= 1  and (Player:BuffP(S.Enrage)) then
             return S.DragonRoar:Cast()
         end
         -- raging_blow,if=talent.carnage.enabled|(talent.massacre.enabled&rage<80)|(talent.frothing_berserker.enabled&rage<90)
@@ -251,22 +251,15 @@ local function APL()
     --   return S.Bloodthirst:Cast()
     --end
     -- rampage,if=cooldown.recklessness.remains<3
-    if S.Whirlwind:IsReady() and Cache.EnemiesCount[8] >= 3 and not Player:BuffP(S.WhirlwindBuff) and S.WhirlwindPassive:IsAvailable() then
-        return S.Whirlwind:Cast()
-    end
-
-    if S.Rampage:IsReady() then
-        return S.Rampage:Cast()
-    end
     if S.Rampage:IsReady() and (S.Recklessness:CooldownRemainsP() < 3) then
         return S.Rampage:Cast()
     end
     -- recklessness
-    if S.Recklessness:IsCastable() then
+    if S.Recklessness:IsCastable('Melee') then
         return S.Recklessness:Cast()
     end
     -- whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up
-    if S.Whirlwind:IsReady() and S.MeatCleaver:IsAvailable() and (Cache.EnemiesCount[8] > 1 and not Player:BuffP(S.MeatCleaverBuff)) then
+    if S.Whirlwind:IsReady() and Cache.EnemiesCount[8] >= 3 and not Player:BuffP(S.WhirlwindBuff) and S.WhirlwindPassive:IsAvailable() then
         return S.Whirlwind:Cast()
     end
     -- blood_fury,if=buff.recklessness.up
